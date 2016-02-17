@@ -138,6 +138,29 @@ Node *ChildNode(Node *currNode, string actionReq){
 	return childNode;
 }
 
+int Cost2Goal(Node *current) {
+	int sum = 0;
+	// Cost array for each number in state
+	int costs[9][9] = {
+		{ 0,1,2,1,2,3,2,3,4 }, //zero costs
+		{ 1,0,1,2,1,2,3,2,3 }, //one costs
+		{ 2,1,0,3,2,1,4,3,2 }, //two costs
+		{ 1,2,3,0,1,2,1,2,3 }, //three costs
+		{ 2,1,2,1,0,1,2,1,2 }, //four costs
+		{ 3,2,1,2,1,0,3,2,1 }, //five costs
+		{ 2,3,4,1,2,3,0,1,2 }, //six costs
+		{ 3,2,3,2,1,2,1,0,1 }, //seven costs
+		{ 4,3,2,3,2,1,2,1,0 }  //eight costs
+	};
+
+	for (int i = 0; i < 9; i++) {
+		int x = current->state[i];
+		sum = sum + costs[i][x];
+	}
+
+	return sum;
+}
+
 bool GoalCheck(Node *current){
 	int goal[] ={0,1,2,3,4,5,6,7,8};
 	int x = 0;
