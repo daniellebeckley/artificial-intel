@@ -170,7 +170,7 @@ void flip_tiles(int *stateTiles, string actionReq){
 Node *ChildNode(Node *currNode, string actionReq){
 	/* Node to be returned as child Node. 
 	   Will be empty if action is not allowed */
-	Node *childNode = new Node();		
+	Node *childNode;		
 	int *stateTiles = new int[9];
 	
 	/* Creates a copy of the current node's state
@@ -180,7 +180,12 @@ Node *ChildNode(Node *currNode, string actionReq){
 	int *end = &oldStateTiles[9];
 	int *start = &oldStateTiles[0];	
 	std::copy(start, end, stateTiles);  
-	childNode->state = stateTiles;
+	//childNode->state = stateTiles;
+
+	// TODO How will we do these? dummy values for now
+	int path_cost = (currNode->path_cost)++;
+	int depth = (currNode->depth)++;
+	int cost2go = (currNode->cost2go)++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
@@ -192,12 +197,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 		else {
 			// Left child of 0
 			flip_tiles(stateTiles, actionReq);
-
-			// TODO How will we do these? dummy values for now
-			(childNode->path_cost)++;
-			(childNode->depth)++;
-			(childNode->cost2go)++;
-			childNode->action = actionReq;
+			childNode = construct_node(stateTiles, currNode, actionReq, path_cost, depth, cost2go);
 		}
 	}
 	else if (actionReq == "down") {
@@ -208,10 +208,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 		else {
 			// Right child of 0
 			flip_tiles(stateTiles, actionReq);
-			(childNode->path_cost)++;
-			(childNode->depth)++;
-			(childNode->cost2go)++;
-			childNode->action = actionReq;
+			childNode = construct_node(stateTiles, currNode, actionReq, path_cost, depth, cost2go);
 		}
 	}
 	else if (actionReq == "left") {
@@ -222,10 +219,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 		else {
 			// Upper child of 0
 			flip_tiles(stateTiles, actionReq);
-			(childNode->path_cost)++;
-			(childNode->depth)++;
-			(childNode->cost2go)++;
-			childNode->action = actionReq;
+			childNode = construct_node(stateTiles, currNode, actionReq, path_cost, depth, cost2go);
 		}
 	}
 	else if (actionReq == "right") {
@@ -236,10 +230,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 		else {
 			// Lower child of 0
 			flip_tiles(stateTiles, actionReq);
-			(childNode->path_cost)++;
-			(childNode->depth)++;
-			(childNode->cost2go)++;
-			childNode->action = actionReq;
+			childNode = construct_node(stateTiles, currNode, actionReq, path_cost, depth, cost2go);
 		}
 	}
 	else{
@@ -297,6 +288,7 @@ int main(){
 
 	// Deallocation of memory
 	delete startNode;
+	delete child;
 
  	return 0;
 }
@@ -315,3 +307,4 @@ Node *construct_node(int *state, Node *parentState, string action, int path_cost
 
 	return newNode;
 }
+
