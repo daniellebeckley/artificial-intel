@@ -161,6 +161,9 @@ void print_to_screen(Node *state){
 	}
 }
 
+/**
+Will print out the solution
+*/
 Node *Solution(Node *n){	
 	if(n->parentNode != NULL){
 		Solution(n->parentNode);
@@ -170,6 +173,42 @@ Node *Solution(Node *n){
 
 }
 
+/*
+@return last child node that is solution, else returns NULL
+*/
+Node *RecursiveDLS(Node *startNode, int limit){
+	if(goalState(startNode)){ return startNode;}
+	else if( limit == 0){ return NULL;}
+	else{
+		for()
+	}
+
+}
+
+Node *DLS(Node *startNode, priority_queue<int> front, priority_queue<int> explored, int limit){
+	bool solution = false;
+	front.push(startNode);
+	Node *child = new Node();
+	while(!front.empty() || !solution){
+		child =  front.pop();
+		if(GoalNode(child)){ return child;}
+		explored.push(child->state);
+		//for all actions, determine is lowNode can make them, 
+		string actions[] = {"up", "down", "left", "right"};
+		for(int i = 0; i < 4; i++){
+			child = childNode(child, actions[i]);
+			if(!front.contains(child->state) && !explored.contains(child->state)){
+				front.push(child->state);
+			}
+			else if(front.contains(child->state))
+				//want to take out "old" child state, compare the "old" value and if the new value is lower, update
+		}
+
+	}
+
+	if(front.empty()){ return NULL;}
+
+}
 int main(){
 
 	// Initialize beginning state
