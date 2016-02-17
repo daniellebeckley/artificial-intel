@@ -138,7 +138,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 	return childNode;
 }
 
-int Cost2Goal(Node *current) {
+int Cost2Go(Node *current) {
 	int sum = 0;
 	// Cost array for each number in state
 	int costs[9][9] = {
