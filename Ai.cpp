@@ -2,6 +2,7 @@
 #include <iostream>
 #include <queue>
 #include <algorithm>	// Library for 'copy' 
+#include <climits>	// Library for 'INT_MAX'
 
 using namespace std;
 
@@ -17,14 +18,19 @@ struct Node{
 
 Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go);
 int Cost2Go(Node *current);
+Node *InQueue(Node *compState, priority_queue<Node> *q);
+bool CompareStates(Node *cmp1, Node *cmp2);
+void Swap(Node *swapState, priority_queue<Node> *q);
+void print_to_screen(Node *state);
 
 // Override: Determine priority (in the priority queue)
 bool operator<(const Node &a, const Node &b)
 {
+	/* TODO fix priority */
 	int priorityA = a.path_cost + a.cost2go;
 	int priorityB = b.path_cost + b.cost2go; 
 
-	return priorityA > priorityB;
+	return priorityA < priorityB;
 }
 
 void flip_tiles(int *stateTiles, string actionReq){
@@ -85,11 +91,10 @@ Node *ChildNode(Node *currNode, string actionReq){
 
 	// TODO How will we do these? dummy values for now
 	int path_cost = currNode->path_cost;
-	int depth = (currNode->depth);
+	int depth = currNode->depth;
 	int cost2go = currNode->cost2go;
 	path_cost++;
 	depth++;
-	cost2go++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
@@ -175,14 +180,8 @@ int Cost2Go(Node *current){
 
 bool GoalCheck(Node *current){
 	int goal[] ={0,1,2,3,4,5,6,7,8};
-	int x = 0;
-	while(x < 9){
-		if(current->state[x] != goal[x]){
-			return false;
-		}
-		x++;		
-	}
-	return true;
+	Node *goalState = construct_node(goal, NULL, "", 0, 0, 0);
+	return CompareStates(current, goalState);
 }
 
 void print_to_screen(Node *state){
@@ -206,39 +205,188 @@ Node *Solution(Node *n){
 
 }
 
-/*
-Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, Node *goal){
-	/* Start with initial state 
+
+Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
+	/* Start with initial state */
 	frontier = new priority_queue<Node>;
 	explored = new priority_queue<Node>;
 	frontier->push(*current);
-	
+
+	/* Search until no nodes are visible from current state */
+	while (!frontier->empty()){
+		Node *curr = new Node(frontier->top());	
+
+		/* If current state == goal state, return */
+		if (GoalCheck(curr)){
+			return Solution(curr);	
+		} 
+
+		frontier->pop();
+		explored->push(*curr);
 		
+		/* For each direction child of current state */
+		Node *up = ChildNode(curr, "up");
+		Node *down = ChildNode(curr, "down");
+		Node *left = ChildNode(curr, "left");
+		Node *right = ChildNode(curr, "right");
+		Node *oldChild;		
 
+		/* If child isn't NULL */
+		if (up != NULL){			
+			/* If child isn't in explored queue, update child path_cost */
+			if (InQueue(up, explored) == NULL){
+				up->path_cost = (up->cost2go) + (up->path_cost);
+			}
+			/* If child is in explored queue and cheaper, replace */
+			else if ((InQueue(up, explored)->path_cost) > (up->path_cost)){		
+				up->path_cost = (up->cost2go) + (up->path_cost);
+				Swap(up, explored);			
+			}
+		}	
+		if (down != NULL){
+			if (InQueue(down, explored) == NULL){
+				down->path_cost = (down->cost2go) + (down->path_cost);
+			}
+			else if ((InQueue(down, explored)->path_cost) > (down->path_cost)){
+				down->path_cost = (down->cost2go) + (down->path_cost);
+				Swap(down, explored);			
+			}
+		}
+		if (left != NULL){
+			if (InQueue(left, explored) == NULL){
+				left->path_cost = (left->cost2go) + (left->path_cost);
+			}
+			else if ((InQueue(left, explored)->path_cost) > (left->path_cost)){
+				left->path_cost = (left->cost2go) + (left->path_cost);
+				Swap(left, explored);			
+			}
+		}
+		if (right != NULL){
+			if (InQueue(right, explored) == NULL){
+				right->path_cost = (right->cost2go) + (right->path_cost);
+			}
+			else if ((InQueue(right, explored)->path_cost) > (right->path_cost)){
+				right->path_cost = (right->cost2go) + (right->path_cost);
+				Swap(right, explored);			
+			}
+		}
 
-	//Node *newy = new Node(frontier->top());
-
-	//print_to_screen(newy);
-
-	return newy;
-}*/
-
-/*
-void GenerateStateMap(Node *initState){
-	while (!GoalCheck(initState)){
+		/* If there is child, find smallest path_cost */
+		int bestPath = INT_MAX;
+		Node *bestState = NULL;	
+		if (up != NULL){
+			if (up->path_cost < bestPath){
+				bestPath = up->path_cost;
+				bestState = up;
+			}
+		}
+		if (down != NULL){
+			if (down->path_cost < bestPath){
+				bestPath = down->path_cost;
+				bestState = down;
+			}
+		}
+		if (left != NULL){
+			if (left->path_cost < bestPath){
+				bestPath = left->path_cost;
+				bestState = left;
+			}
+		}
+		if (right != NULL){
+			if (right->path_cost < bestPath){
+				bestPath = right->path_cost;
+				bestState = right;
+			}
+		}
 		
+		/* If there is a child, add smallest path_cost to frontier */
+		if (bestState != NULL){
+			/* TODO remove test */
+			print_to_screen(bestState);
+
+			frontier->push(*bestState);
+		}
+
+		for (int x=0; x < frontier->size(); x++){
+			Node *test = new Node(frontier->top());			
+
+			// TODO remove test			
+			//cout << "--PRINT Q--" << endl;
+			//print_to_screen(test);
+			//delete test;
+		}
+
+		//delete up;
+		//delete down;
+		//delete left;
+		//delete right;
+		//delete bestState;
+		//delete oldChild;
+		//delete curr;
 	}
-}*/
+	//delete curr;	
 
+	return NULL;
+}
+
+void Swap(Node *swapState, priority_queue<Node> *q){
+	priority_queue<Node> *temp;
+	temp = new priority_queue<Node>;	
+
+	for (int i=0; i < q->size(); i++){
+		Node *curr = new Node(q->top());
+		q->pop();		
+		if (!CompareStates(swapState, curr)){
+			temp->push(*curr);	
+		}
+		else{
+			temp->push(*swapState);
+		} 
+	}
+
+	q = temp;
+}
+
+bool CompareStates(Node *cmp1, Node *cmp2){
+	int *cmpTiles1 = cmp1->state;
+	int *cmpTiles2 = cmp2->state;
+	bool tileMatch = true;
+
+	for(int i=0; i<9; i++){
+		if (cmpTiles1[i] != cmpTiles2[i]){
+			tileMatch = false;
+		}
+	}
+
+	return tileMatch;
+}
+
+/* TODO Test*/
+Node *InQueue(Node *compState, priority_queue<Node> *q){
+	bool isIn = false;	
+	Node *match = NULL;
+	
+	/* For each state in priority queue */
+	for (int i = 0; i < q->size() && !isIn; i++){	
+		/* Check if state is same as 'compState' */
+		Node *curr = new Node(q->top());
+		bool tileMatch = CompareStates(compState, curr);
+		
+		/* State is the same */
+		if (tileMatch){
+			isIn = true;
+			match = curr;
+		}
+	}
+
+	return match;
+}
 
 int main(){
 
 	// Initialize beginning state
 	int initState[] = {5,0,4,2,1,3,6,7,8};	
 	Node *startNode = construct_node(initState, NULL, "", 0, 0, 0);
-
-	int goalState[] = {0,1,2,3,4,5,6,7,8};		// Goal state tile array
-	int solution;					// Tile array of soln from goal to curr state
 	
 	// TODO remove test
 	//print_to_screen(startNode);
@@ -251,7 +399,7 @@ int main(){
 	Node *child = ChildNode(startNode, "down");
 	
 	//
-	//Node *test = AStarSearch(startNode, explored, frontier, child);
+	Node *test = AStarSearch(startNode, explored, frontier);
 
 	//cout<<"Start: "<<endl;
 	//print_to_screen(startNode);
