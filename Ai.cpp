@@ -84,14 +84,12 @@ Node *ChildNode(Node *currNode, string actionReq){
 	std::copy(start, end, stateTiles);  
 
 	// TODO How will we do these? dummy values for now
-	int path_cost = currNode->path_cost + 1;
-	int depth = currNode->depth + 1;
-	int cost2go = currNode->cost2go + 1;
 	int path_cost = currNode->path_cost;
 	int depth = (currNode->depth);
 	int cost2go = currNode->cost2go;
 	path_cost++;
 	depth++;
+	cost2go++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
