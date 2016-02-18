@@ -22,6 +22,7 @@ struct Node{
 };
 
 Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go);
+int Cost2Go(Node *current);
 
 void flip_tiles(int *stateTiles, string actionReq){
 	/* Find blank tile. In this case, blank tile is
@@ -84,7 +85,6 @@ Node *ChildNode(Node *currNode, string actionReq){
 	int cost2go = currNode->cost2go;
 	path_cost++;
 	depth++;
-	cost2go++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
@@ -137,7 +137,10 @@ Node *ChildNode(Node *currNode, string actionReq){
     	exit (EXIT_FAILURE);
 
 	}
-
+	
+	if (childNode != NULL) {
+		childNode->cost2go = Cost2Go(childNode);
+	}
 
 	return childNode;
 }
