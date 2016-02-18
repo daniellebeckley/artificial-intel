@@ -79,10 +79,12 @@ Node *ChildNode(Node *currNode, string actionReq){
 	std::copy(start, end, stateTiles);  
 	//childNode->state = stateTiles;
 
-	// TODO How will we do these? dummy values for now
-	int path_cost = (currNode->path_cost)++;
-	int depth = (currNode->depth)++;
-	int cost2go = (currNode->cost2go)++;
+	int path_cost = currNode->path_cost;
+	int depth = (currNode->depth);
+	int cost2go = currNode->cost2go;
+	path_cost++;
+	depth++;
+	cost2go++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
@@ -131,7 +133,9 @@ Node *ChildNode(Node *currNode, string actionReq){
 		}
 	}
 	else{
-		// TODO error message? 
+		cout << ("Error");
+    	exit (EXIT_FAILURE);
+
 	}
 
 
@@ -174,7 +178,7 @@ bool GoalCheck(Node *current){
 }
 
 void print_to_screen(Node *state){
-	cout << "Step: " << state->depth << endl;				
+	cout << "Step " << state->depth << ": " << state->action << endl;				
 	for(int i = 0; i<9; ){
 		for(int j = 0; j<3; j++){		
 			cout << state->state[i] << " ";
@@ -197,7 +201,7 @@ int main(){
 
 	// Initialize beginning state
 	int initState[] = {5,0,4,2,1,3,6,7,8};	
-	Node *startNode = construct_node(initState, NULL, "", 0, 0, 0);
+	Node *startNode = construct_node(initState, NULL, "None", 0, 0, 0);
 
 	// Initialize goal state
 	int goalState[] = {0,1,2,3,4,5,6,7,8};
@@ -210,14 +214,13 @@ int main(){
 	priority_queue<int> frontier;
 
 	// Generate child nodes
-	Node *child = ChildNode(startNode, "down");
+	Node *child = ChildNode(startNode, "left");
 	
 	//cout<<"Start: "<<endl;
 	//print_to_screen(startNode);
 	//cout<<"Child: "<<endl;
 	//print_to_screen(child);
 
-	cout <<"Solution:" << endl;
 	/**while(!GoalCheck(child)){
 		//do algorithm
 	}
