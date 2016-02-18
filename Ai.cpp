@@ -23,6 +23,11 @@ struct Node{
 
 Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go);
 
+bool operator<(const Node &a, const Node &b)
+{
+	return a.path_cost > b.path_cost;
+}
+
 void flip_tiles(int *stateTiles, string actionReq){
 	/* Find blank tile. In this case, blank tile is
 	      gauranteed, so no error checking needed.
@@ -200,42 +205,62 @@ Node *Solution(Node *n){
 
 }
 
-/*
-@return last child node that is solution, else returns NULL
-*/
-Node *RecursiveDLS(Node *startNode, int limit){
-	if(goalState(startNode)){ return startNode;}
-	else if( limit == 0){ return NULL;}
-	else{
-		for()
+bool Contains(priority_queue<Node> *queue, Node* element){
+	bool result = false;
+	int size = queue->size();
+	while(!result && size > 0 ){
+		Node *temp = new Node(queue->top());
+		if(temp == element){
+			result = true;
+		}
+		queue->push(*temp);
+		size--;
 	}
-
+	return result;
 }
 
-Node *DLS(Node *startNode, priority_queue<int> front, priority_queue<int> explored, int limit){
+Node *UCS(Node *startNode){
+	priority_queue<Node> *explored; 
+	explored = new priority_queue<Node>;
+	priority_queue<Node> *frontier; 
+	frontier = new priority_queue<Node>;
+	
+
 	bool solution = false;
-	front.push(startNode);
-	Node *child = new Node();
-	while(!front.empty() || !solution){
-		child =  front.pop();
-		if(GoalNode(child)){ return child;}
-		explored.push(child->state);
+	frontier->push(*startNode);
+	Node n = frontier.pop();
+	
+	Node *child;
+	while(!frontier->empty() || !solution){
+
+		child =  *(frontier->pop());
+
+		cout << frontier->size() << endl;
+		if(GoalCheck(child)){ 
+			return child;
+		}
+		explored->push(*child);
 		//for all actions, determine is lowNode can make them, 
 		string actions[] = {"up", "down", "left", "right"};
 		for(int i = 0; i < 4; i++){
-			child = childNode(child, actions[i]);
-			if(!front.contains(child->state) && !explored.contains(child->state)){
-				front.push(child->state);
+			child = ChildNode(child, actions[i]);
+			if(!Contains(frontier, child) && !Contains(explored, child) && child != NULL){
+				frontier->push(*child);
 			}
-			else if(front.contains(child->state))
+			else if(Contains(frontier, child)){
+				//remove, compare;
+			}
 				//want to take out "old" child state, compare the "old" value and if the new value is lower, update
 		}
 
 	}
 
-	if(front.empty()){ return NULL;}
+	if(frontier->empty()){ return NULL;}
+
+	return NULL;
 
 }
+
 int main(){
 
 	// Initialize beginning state
@@ -244,13 +269,12 @@ int main(){
 
 	// Initialize goal state
 	int goalState[] = {0,1,2,3,4,5,6,7,8};
-
+	
 	// TODO remove test
 	//print_to_screen(startNode);
 
 	// Define explored and frontier priority queues
-	priority_queue<int> explored;
-	priority_queue<int> frontier;
+	
 
 	// Generate child nodes
 	Node *child = ChildNode(startNode, "left");
@@ -259,7 +283,7 @@ int main(){
 	//print_to_screen(startNode);
 	//cout<<"Child: "<<endl;
 	//print_to_screen(child);
-
+	UCS(child);
 	/**while(!GoalCheck(child)){
 		//do algorithm
 	}
