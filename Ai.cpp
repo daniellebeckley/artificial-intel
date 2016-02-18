@@ -16,12 +16,6 @@ struct Node{
 };
 
 Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go);
-void flip_tiles(int *stateTiles, string actionReq);
-Node *ChildNode(Node *currNode, string actionReq);
-int Cost2Go(Node *current);
-bool GoalCheck(Node *current);
-void print_to_screen(Node *state);
-Node *Solution(Node *n);
 
 // Override: Determine priority (in the priority queue)
 bool operator<(const Node &a, const Node &b)
@@ -32,146 +26,46 @@ bool operator<(const Node &a, const Node &b)
 	return priorityA > priorityB;
 }
 
-/*
-Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, Node *goal){
-	/* Start with initial state */
-	frontier = new priority_queue<Node>;
-	explored = new priority_queue<Node>;
-	frontier->push(*current);
-	
-		
-
-
-	//Node *newy = new Node(frontier->top());
-
-	//print_to_screen(newy);
-
-	return newy;
-}*/
-/*
-void GenerateStateMap(Node *initState){
-	while (!GoalCheck(initState)){
-		
-	}
-}*/
-
-
-int main(){
-
-	// Initialize beginning state
-	int initState[] = {5,0,4,2,1,3,6,7,8};	
-	Node *startNode = construct_node(initState, NULL, "", 0, 0, 0);
-
-	int goalState[] = {0,1,2,3,4,5,6,7,8};		// Goal state tile array
-	int solution;					// Tile array of soln from goal to curr state
-	
-	// TODO remove test
-	//print_to_screen(startNode);
-
-	// Define explored and frontier priority queues
-	priority_queue<Node> *explored;
-	priority_queue<Node> *frontier;
-
-
-
-	// Generate child nodes
-	
-	Node *child = ChildNode(startNode, "down");
-	
-	//
-	//Node *test = AStarSearch(startNode, explored, frontier, child);
-
-	//cout<<"Start: "<<endl;
-	//print_to_screen(startNode);
-	//cout<<"Child: "<<endl;
-	//print_to_screen(child);
-
-	cout <<"Solution:" << endl;
-	/**while(!GoalCheck(child)){
-		//do algorithm
-	}
-	*/
-	Solution(child);		//this will print the solution
-
-	// Deallocation of memory
-	//TODO:; some sort of while loop to delete;
-	delete startNode;
-	delete child;
-
- 	return 0;
-}
-
-Node *Solution(Node *n){	
-	
-	if(n->parentNode != NULL){
-		Solution(n->parentNode);
-	}
-	print_to_screen(n);
-	return n;
-
-}
-
-bool GoalCheck(Node *current){
-	int goal[] ={0,1,2,3,4,5,6,7,8};
-	int x = 0;
-	while(x < 9){
-		if(current->state[x] != goal[x]){
-			return false;
+void flip_tiles(int *stateTiles, string actionReq){
+	/* Find blank tile. In this case, blank tile is
+	      gauranteed, so no error checking needed.
+	*/	
+	int blankLocation;
+	for (int i = 0; i<9; i++){
+		if (stateTiles[i] == 0){
+			blankLocation = i;
 		}
-		x++;		
-	}
-	return true;
-}
-
-void print_to_screen(Node *state){
-	cout << "Step: " << state->depth << endl;				
-	for(int i = 0; i<9; ){
-		for(int j = 0; j<3; j++){		
-			cout << state->state[i] << " ";
-			i++;
-	   	}
-		cout << endl;
-	}
-}
-
-
-int Cost2Go(Node *current){
-	int sum = 0;
-
-	// Cost array for each number in state
-	int costs[9][9] = {
-		{ 0,1,2,1,2,3,2,3,4 }, //zero costs
-		{ 1,0,1,2,1,2,3,2,3 }, //one costs
-		{ 2,1,0,3,2,1,4,3,2 }, //two costs
-		{ 1,2,3,0,1,2,1,2,3 }, //three costs
-		{ 2,1,2,1,0,1,2,1,2 }, //four costs
-		{ 3,2,1,2,1,0,3,2,1 }, //five costs
-		{ 2,3,4,1,2,3,0,1,2 }, //six costs
-		{ 3,2,3,2,1,2,1,0,1 }, //seven costs
-		{ 4,3,2,3,2,1,2,1,0 }  //eight costs
-	};
-
-	for (int i = 0; i < 9; i++) {
-		int x = current->state[i];
-		sum = sum + costs[i][x];
 	}
 
-	return sum;
-}
+	/* Switch tiles. Actions requested are required to 
+	      be valid before this function is called, so 
+	      no error checking needed.
+	*/
+	int oldTile;
+	if (actionReq == "up") {
+		oldTile = stateTiles[blankLocation-3];
+		stateTiles[blankLocation-3] = 0;
+		stateTiles[blankLocation] = oldTile;
+	}
+	else if (actionReq == "down") {
+		oldTile = stateTiles[blankLocation+3];
+		stateTiles[blankLocation+3] = 0;
+		stateTiles[blankLocation] = oldTile;
+	}
+	else if (actionReq == "left") {
+		oldTile = stateTiles[blankLocation-1];
+		stateTiles[blankLocation-1] = 0;
+		stateTiles[blankLocation] = oldTile;
+	}
+	else if (actionReq == "right") {
+		oldTile = stateTiles[blankLocation+1];
+		stateTiles[blankLocation+1] = 0;
+		stateTiles[blankLocation] = oldTile;
+	}
+	else {
+		// TODO error message?
+	}
 
-Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go){
-
-	// Allocate memory for new node
-	Node *newNode = new Node;	
-
-	newNode->state = state;
-	newNode->parentNode = parentState;
-	newNode->action = action;
-	newNode->path_cost = path_cost;
-	newNode->depth = depth;
-	newNode->cost2go = cost2go;
-
-	return newNode;
 }
 
 Node *ChildNode(Node *currNode, string actionReq){
@@ -192,6 +86,12 @@ Node *ChildNode(Node *currNode, string actionReq){
 	int path_cost = currNode->path_cost + 1;
 	int depth = currNode->depth + 1;
 	int cost2go = currNode->cost2go + 1;
+	int path_cost = currNode->path_cost;
+	int depth = (currNode->depth);
+	int cost2go = currNode->cost2go;
+	path_cost++;
+	depth++;
+	cost2go++;
 	
 	/* Perform action required by flipping tile with adjacent direction
 		Then, increment path_cost, depth and cost2go */
@@ -240,51 +140,150 @@ Node *ChildNode(Node *currNode, string actionReq){
 		}
 	}
 	else{
-		// TODO error message? 
+		cout << ("Error");
+    		exit (EXIT_FAILURE);
 	}
 
 
 	return childNode;
 }
 
-void flip_tiles(int *stateTiles, string actionReq){
-	/* Find blank tile. In this case, blank tile is
-	      gauranteed, so no error checking needed.
-	*/	
-	int blankLocation;
-	for (int i = 0; i<9; i++){
-		if (stateTiles[i] == 0){
-			blankLocation = i;
-		}
+int Cost2Go(Node *current){
+	int sum = 0;
+
+	// Cost array for each number in state
+	int costs[9][9] = {
+		{ 0,1,2,1,2,3,2,3,4 }, //zero costs
+		{ 1,0,1,2,1,2,3,2,3 }, //one costs
+		{ 2,1,0,3,2,1,4,3,2 }, //two costs
+		{ 1,2,3,0,1,2,1,2,3 }, //three costs
+		{ 2,1,2,1,0,1,2,1,2 }, //four costs
+		{ 3,2,1,2,1,0,3,2,1 }, //five costs
+		{ 2,3,4,1,2,3,0,1,2 }, //six costs
+		{ 3,2,3,2,1,2,1,0,1 }, //seven costs
+		{ 4,3,2,3,2,1,2,1,0 }  //eight costs
+	};
+
+	for (int i = 0; i < 9; i++) {
+		int x = current->state[i];
+		sum = sum + costs[i][x];
 	}
 
-	/* Switch tiles. Actions requested are required to 
-	      be valid before this function is called, so 
-	      no error checking needed.
+	return sum;
+}
+
+bool GoalCheck(Node *current){
+	int goal[] ={0,1,2,3,4,5,6,7,8};
+	int x = 0;
+	while(x < 9){
+		if(current->state[x] != goal[x]){
+			return false;
+		}
+		x++;		
+	}
+	return true;
+}
+
+void print_to_screen(Node *state){
+	cout << "Step: " << state->depth << endl;				
+	for(int i = 0; i<9; ){
+		for(int j = 0; j<3; j++){		
+			cout << state->state[i] << " ";
+			i++;
+	   	}
+		cout << endl;
+	}
+}
+
+Node *Solution(Node *n){	
+	
+	if(n->parentNode != NULL){
+		Solution(n->parentNode);
+	}
+	print_to_screen(n);
+	return n;
+
+}
+
+/*
+Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, Node *goal){
+	/* Start with initial state 
+	frontier = new priority_queue<Node>;
+	explored = new priority_queue<Node>;
+	frontier->push(*current);
+	
+		
+
+
+	//Node *newy = new Node(frontier->top());
+
+	//print_to_screen(newy);
+
+	return newy;
+}*/
+
+/*
+void GenerateStateMap(Node *initState){
+	while (!GoalCheck(initState)){
+		
+	}
+}*/
+
+
+int main(){
+
+	// Initialize beginning state
+	int initState[] = {5,0,4,2,1,3,6,7,8};	
+	Node *startNode = construct_node(initState, NULL, "", 0, 0, 0);
+
+	int goalState[] = {0,1,2,3,4,5,6,7,8};		// Goal state tile array
+	int solution;					// Tile array of soln from goal to curr state
+	
+	// TODO remove test
+	//print_to_screen(startNode);
+
+	// Define explored and frontier priority queues
+	priority_queue<Node> *explored;
+	priority_queue<Node> *frontier;
+
+	// Generate child nodes
+	Node *child = ChildNode(startNode, "down");
+	
+	//
+	//Node *test = AStarSearch(startNode, explored, frontier, child);
+
+	//cout<<"Start: "<<endl;
+	//print_to_screen(startNode);
+	//cout<<"Child: "<<endl;
+	//print_to_screen(child);
+
+	cout <<"Solution:" << endl;
+	/**while(!GoalCheck(child)){
+		//do algorithm
+	}
 	*/
-	int oldTile;
-	if (actionReq == "up") {
-		oldTile = stateTiles[blankLocation-3];
-		stateTiles[blankLocation-3] = 0;
-		stateTiles[blankLocation] = oldTile;
-	}
-	else if (actionReq == "down") {
-		oldTile = stateTiles[blankLocation+3];
-		stateTiles[blankLocation+3] = 0;
-		stateTiles[blankLocation] = oldTile;
-	}
-	else if (actionReq == "left") {
-		oldTile = stateTiles[blankLocation-1];
-		stateTiles[blankLocation-1] = 0;
-		stateTiles[blankLocation] = oldTile;
-	}
-	else if (actionReq == "right") {
-		oldTile = stateTiles[blankLocation+1];
-		stateTiles[blankLocation+1] = 0;
-		stateTiles[blankLocation] = oldTile;
-	}
-	else {
-		// TODO error message?
-	}
+	Solution(child);		//this will print the solution
+
+	// Deallocation of memory
+	//TODO:; some sort of while loop to delete;
+	delete startNode;
+	delete child;
+
+ 	return 0;
+}
+
+Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go){
+
+	// Allocate memory for new node
+	Node *newNode = new Node;	
+
+	newNode->state = state;
+	newNode->parentNode = parentState;
+	newNode->action = action;
+	newNode->path_cost = path_cost;
+	newNode->depth = depth;
+	newNode->cost2go = cost2go;
+
+	return newNode;
 }
 
