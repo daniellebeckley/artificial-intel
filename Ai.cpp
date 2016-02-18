@@ -239,6 +239,7 @@ void ReplaceValue(priority_queue<Node> *frontier, Node* child, int pc){
 		else {frontier->push(*temp);}
 	}
 }
+
 Node *UCS(Node *startNode){
 	bool solution = false;
 	priority_queue<Node> *explored; 
@@ -246,7 +247,6 @@ Node *UCS(Node *startNode){
 	explored = new priority_queue<Node>;
 	frontier = new priority_queue<Node>;
 
-	cout << "hi" << endl;
 	
 	
 	frontier->push(*startNode);
@@ -254,12 +254,15 @@ Node *UCS(Node *startNode){
 	Node *OfficialNode;
 	while(!frontier->empty() || !solution){
 
+//getting a SEGFAULT HERE...why!!!
 		*child = frontier->top();
+		cout << "hey" << endl;
 		frontier->pop();
 
 		if(GoalCheck(child)){ 
 			return child;
 		}
+
 		explored->push(*child);
 		//for all actions, determine is lowNode can make them, 
 		string actions[] = {"up", "down", "left", "right"};
