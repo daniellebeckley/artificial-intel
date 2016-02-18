@@ -218,24 +218,45 @@ bool Contains(priority_queue<Node> *queue, Node* element){
 	}
 	return result;
 }
+int getValue(priority_queue<Node> *queue, Node* element){
+	while(true){
+		Node *temp = new Node(queue->top());
+		if(temp == element){
+			return temp->path_cost;
+		}
+		queue->push(*temp);
+	}
+}
 
+void ReplaceValue(priority_queue<Node> *frontier, Node* child, int pc){
+	bool replaced = false;
+	while(!replaced){
+		Node *temp = new Node(frontier->top());
+		if(temp == child){
+			frontier->pop();
+			replaced = true;
+		}
+		else {frontier->push(*temp);}
+	}
+}
 Node *UCS(Node *startNode){
-	priority_queue<Node> *explored; 
-	explored = new priority_queue<Node>;
-	priority_queue<Node> *frontier; 
-	frontier = new priority_queue<Node>;
-	
-
 	bool solution = false;
-	frontier->push(*startNode);
-	Node n = frontier.pop();
+	priority_queue<Node> *explored; 
+	priority_queue<Node> *frontier; 
+	explored = new priority_queue<Node>;
+	frontier = new priority_queue<Node>;
+
+	cout << "hi" << endl;
 	
+	
+	frontier->push(*startNode);
 	Node *child;
+	Node *OfficialNode;
 	while(!frontier->empty() || !solution){
 
-		child =  *(frontier->pop());
+		*child = frontier->top();
+		frontier->pop();
 
-		cout << frontier->size() << endl;
 		if(GoalCheck(child)){ 
 			return child;
 		}
@@ -243,21 +264,24 @@ Node *UCS(Node *startNode){
 		//for all actions, determine is lowNode can make them, 
 		string actions[] = {"up", "down", "left", "right"};
 		for(int i = 0; i < 4; i++){
-			child = ChildNode(child, actions[i]);
-			if(!Contains(frontier, child) && !Contains(explored, child) && child != NULL){
-				frontier->push(*child);
+			OfficialNode = ChildNode(child, actions[i]);
+			if(OfficialNode != NULL){
+				if(!Contains(frontier, child) && !Contains(explored, child)){
+					frontier->push(*child);
+				}
+				else if(Contains(frontier, child)){
+					if(getValue(frontier, child) > child->path_cost){
+						ReplaceValue(frontier, child, child->path_cost);
+						frontier->push(*OfficialNode); //replace node
+					}
+				}
 			}
-			else if(Contains(frontier, child)){
-				//remove, compare;
-			}
-				//want to take out "old" child state, compare the "old" value and if the new value is lower, update
-		}
 
 	}
-
-	if(frontier->empty()){ return NULL;}
-
-	return NULL;
+			
+}
+if(frontier->empty()){ return NULL;}
+return NULL; //should never reach this point
 
 }
 
@@ -277,23 +301,23 @@ int main(){
 	
 
 	// Generate child nodes
-	Node *child = ChildNode(startNode, "left");
+	//Node *child = ChildNode(startNode, "left");
 	
 	//cout<<"Start: "<<endl;
 	//print_to_screen(startNode);
 	//cout<<"Child: "<<endl;
 	//print_to_screen(child);
-	UCS(child);
+	UCS(startNode);
 	/**while(!GoalCheck(child)){
 		//do algorithm
 	}
 	*/
-	Solution(child);		//this will print the solution
+	Solution(startNode);		//this will print the solution
 
 	// Deallocation of memory
 	//TODO:; some sort of while loop to delete;
 	delete startNode;
-	delete child;
+	//delete child;
 
  	return 0;
 }
