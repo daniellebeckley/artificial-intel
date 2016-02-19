@@ -215,7 +215,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 	bool keepSearching = true;
 	
 	/* Search until no nodes are visible from current state */
-	while (!frontier->empty() || keepSearching){
+	while (keepSearching && !frontier->empty()){
 		Node *curr = new Node(frontier->top());	
 
 		/* If current state == goal state, return */
@@ -269,7 +269,6 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			}
 		}
 
-
 		/* If there is child, find smallest path_cost */
 		int bestPath = INT_MAX;
 		cout << "hey" << endl;
@@ -302,11 +301,8 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 				keepSearching = false;
 			}
 		}
-	cout << frontier->size() << endl;
+
 	}
-
-	cout << bestState->path_cost;
-
 return bestState;
 }
 
