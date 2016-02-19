@@ -209,8 +209,10 @@ Node *Solution(Node *n){
 Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, int cutoff){
 	frontier = new priority_queue<Node>;
 	explored = new priority_queue<Node>;
+	Node *lastNode = current;
 	frontier->push(*current);
 	
+	cout << "CUTOFF:" << cutoff << endl;
 	Node *bestState;	
 	bool keepSearching = true;
 	Node *l;
@@ -218,7 +220,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 	/* Search until no nodes are visible from current state */
 	Node *curr;
 
-	while (!frontier->empty()){
+	while(!frontier->empty() && cutoff < 13){
 		curr = new Node(frontier->top());	
 
 		/* If current state == goal state, return */
@@ -236,7 +238,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		Node *right = ChildNode(curr, "right");
 
 		/* If child isn't NULL */
-		if (up != NULL && up->depth < cutoff){			
+		if (up != NULL && up->depth <= cutoff){			
 			/* If child isn't in explored queue, add to frontier */
 			if (InQueue(up, frontier) == NULL){
 				up->path_cost = (up->path_cost) + up->parentNode->path_cost;
@@ -247,7 +249,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 				Swap(up, explored);			
 			}
 		}else{ delete up;}	
-		if (down != NULL && down->depth < cutoff){
+		if (down != NULL && down->depth <= cutoff){
 			if (InQueue(down, frontier) == NULL){
 				down->path_cost = (down->path_cost) + current->path_cost;
 				frontier->push(*down);
@@ -256,7 +258,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 				Swap(down, explored);			
 			}
 		}else{ delete down;}
-		if (left != NULL && left->depth < cutoff){
+		if (left != NULL && left->depth <= cutoff){
 			if (InQueue(left, frontier) == NULL){
 				left->path_cost = (left->path_cost) + left->parentNode->path_cost;
 				frontier->push(*left);
@@ -266,7 +268,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 				Swap(left, explored);			
 			}
 		}else{ delete left;}
-		if (right != NULL && right->depth < cutoff){
+		if (right != NULL && right->depth <= cutoff){
 			if (InQueue(right, frontier) == NULL){
 				right->path_cost = (right->path_cost) + right->parentNode->path_cost;
 				frontier->push(*right);
@@ -276,11 +278,12 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			}
 		}else{ delete right;}
 
-		cout << "break?" << endl;
-		cout << "size at end of while: " << frontier->size() << endl;
+		cout << "This is the size of frontier at end of while: " << frontier->size() << endl;
+		lastNode = current;
+		cutoff++;
 	
 	}
-return NULL;
+return current;
 }
 
 
@@ -290,7 +293,6 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 	explored = new priority_queue<Node>;
 	Node *bestState = NULL;	
 	frontier->push(*current);
-
 	/* Search until no nodes are visible from current state */
 	while (!frontier->empty()){
 		Node *curr = new Node(frontier->top());	
@@ -474,7 +476,7 @@ int main(){
 	priority_queue<Node> *explored;
 	priority_queue<Node> *frontier;
 
-	Node *l = DFSSearch(startNode, explored, frontier, 2);
+	Node *l = DFSSearch(startNode, explored, frontier, 1);
 
 
 		//l = DFSSearch(l, explored, frontier, 10);
