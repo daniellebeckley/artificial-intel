@@ -70,7 +70,8 @@ void flip_tiles(int *stateTiles, string actionReq){
 		stateTiles[blankLocation] = oldTile;
 	}
 	else {
-		// TODO error message?
+		cout << ("Error");
+    		exit (EXIT_FAILURE);
 	}
 
 }
@@ -205,11 +206,116 @@ Node *Solution(Node *n){
 
 }
 
+Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, int cutoff){
+	frontier = new priority_queue<Node>;
+	explored = new priority_queue<Node>;
+	frontier->push(*current);
+	
+	Node *bestState = NULL;	
+	bool keepSearching = true;
+	
+	/* Search until no nodes are visible from current state */
+	while (!frontier->empty() || keepSearching){
+		Node *curr = new Node(frontier->top());	
+
+		/* If current state == goal state, return */
+		if (GoalCheck(curr)){
+			return Solution(curr);	
+		} 
+
+		frontier->pop();
+		explored->push(*curr);
+
+		/* For each direction child of current state */
+		Node *up = ChildNode(curr, "up");
+		Node *down = ChildNode(curr, "down");
+		Node *left = ChildNode(curr, "left");
+		Node *right = ChildNode(curr, "right");
+		Node *oldChild;		
+
+		/* If child isn't NULL */
+		if (up != NULL){			
+			/* If child isn't in explored queue, add to frontier */
+			if (InQueue(up, explored) == NULL && InQueue(up, frontier) == NULL && up->depth < cutoff){
+				frontier->push(*up);
+			}
+			/* If child is in explored queue and cheaper, replace */
+			else if ((InQueue(up, explored)->path_cost) > (up->path_cost)){		
+				Swap(up, explored);			
+			}
+		}	
+		if (down != NULL){
+			if (InQueue(down, explored) == NULL && InQueue(down, frontier) == NULL && down->depth < cutoff){
+				frontier->push(*down);
+			}
+			else if ((InQueue(down, explored)->path_cost) > (down->path_cost)){
+				Swap(down, explored);			
+			}
+		}
+		if (left != NULL){
+			if (InQueue(left, explored) == NULL && InQueue(left, frontier) == NULL && left->depth < cutoff){
+				frontier->push(*left);
+			}
+			else if ((InQueue(left, explored)->path_cost) > (left->path_cost)){
+				Swap(left, explored);			
+			}
+		}
+		if (right != NULL){
+			if (InQueue(right, explored) == NULL && InQueue(right, frontier) == NULL && right->depth < cutoff){
+				frontier->push(*right);
+			}
+			else if ((InQueue(right, explored)->path_cost) > (right->path_cost)){
+				Swap(right, explored);			
+			}
+		}
+
+
+		/* If there is child, find smallest path_cost */
+		int bestPath = INT_MAX;
+		cout << "hey" << endl;
+		if (up != NULL){
+			if (up->path_cost < bestPath){
+				bestPath = up->path_cost;
+				bestState = up;
+				keepSearching = false;
+			}
+		}
+		if (down != NULL){
+			if (down->path_cost < bestPath){
+				bestPath = down->path_cost;
+				bestState = down;
+				keepSearching = false;
+
+			}
+		}
+		if (left != NULL){
+			if (left->path_cost < bestPath){
+				bestPath = left->path_cost;
+				bestState = left;
+				keepSearching = false;
+			}
+		}
+		if (right != NULL){
+			if (right->path_cost < bestPath){
+				bestPath = right->path_cost;
+				bestState = right;
+				keepSearching = false;
+			}
+		}
+	cout << frontier->size() << endl;
+	}
+
+	cout << bestState->path_cost;
+
+return bestState;
+}
+
 
 Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
 	/* Start with initial state */
 	frontier = new priority_queue<Node>;
 	explored = new priority_queue<Node>;
+	Node *bestState = NULL;	
 	frontier->push(*current);
 
 	/* Search until no nodes are visible from current state */
@@ -273,7 +379,6 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 
 		/* If there is child, find smallest path_cost */
 		int bestPath = INT_MAX;
-		Node *bestState = NULL;	
 		if (up != NULL){
 			if (up->path_cost < bestPath){
 				bestPath = up->path_cost;
@@ -326,7 +431,7 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 	}
 	//delete curr;	
 
-	return NULL;
+	return bestState;
 }
 
 void Swap(Node *swapState, priority_queue<Node> *q){
@@ -399,8 +504,8 @@ int main(){
 	Node *child = ChildNode(startNode, "down");
 	
 	//
-	Node *test = AStarSearch(startNode, explored, frontier);
-
+	//Node *test = AStarSearch(startNode, explored, frontier);
+	Node *test = DFSSearch(startNode, explored, frontier, 20);
 	//cout<<"Start: "<<endl;
 	//print_to_screen(startNode);
 	//cout<<"Child: "<<endl;
