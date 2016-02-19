@@ -27,8 +27,8 @@ void print_to_screen(Node *state);
 bool operator<(const Node &a, const Node &b)
 {
 	/* TODO fix priority */
-	int priorityA = a.path_cost + a.cost2go;
-	int priorityB = b.path_cost + b.cost2go; 
+	int priorityA = a.path_cost;
+	int priorityB = b.path_cost; 
 
 	return priorityA < priorityB;
 }
@@ -94,7 +94,7 @@ Node *ChildNode(Node *currNode, string actionReq){
 	int path_cost = currNode->path_cost;
 	int depth = currNode->depth;
 	int cost2go = currNode->cost2go;
-	path_cost++;
+	//path_cost++;
 	depth++;
 	
 	/* Perform action required by flipping tile with adjacent direction
@@ -196,6 +196,13 @@ void print_to_screen(Node *state){
 	}
 }
 
+void print_node_meta(Node *state, string action){
+	cout << "-- For: " << action << endl;
+	cout << "\tpath_cost: " << state->path_cost << endl;
+	cout << "\tdepth: " << state->depth << endl;
+	cout << "\tcost2go: " << state->cost2go << endl;
+}
+
 Node *Solution(Node *n){	
 	
 	if(n->parentNode != NULL){
@@ -236,54 +243,59 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		Node *down = ChildNode(curr, "down");
 		Node *left = ChildNode(curr, "left");
 		Node *right = ChildNode(curr, "right");
+		
 
 		/* If child isn't NULL */
-		if (up != NULL && up->depth <= cutoff){			
+		if (up != NULL && up->depth <= cutoff){	
+			//print_node_meta(up, "up");		
 			/* If child isn't in explored queue, add to frontier */
 			if (InQueue(up, frontier) == NULL){
-				up->path_cost = (up->path_cost) + up->parentNode->path_cost;
+				up->path_cost = 1 + up->parentNode->path_cost;
 				frontier->push(*up);
 			}
 			/* If child is in explored queue and cheaper, replace */
-			else if ((InQueue(up, explored)->path_cost) > (up->path_cost)){		
-				Swap(up, explored);			
+			else if ((InQueue(up, frontier)->path_cost) > (up->path_cost)){		
+				Swap(up, frontier);			
 			}
 		}else{ delete up;}	
 		if (down != NULL && down->depth <= cutoff){
+			//print_node_meta(down, "down");
 			if (InQueue(down, frontier) == NULL){
-				down->path_cost = (down->path_cost) + current->path_cost;
+				down->path_cost = 1 + down->parentNode->path_cost;
 				frontier->push(*down);
 			}
-			else if ((InQueue(down, explored)->path_cost) > (down->path_cost)){
-				Swap(down, explored);			
+			else if ((InQueue(down, frontier)->path_cost) > (down->path_cost)){
+				Swap(down, frontier);			
 			}
 		}else{ delete down;}
 		if (left != NULL && left->depth <= cutoff){
+			//print_node_meta(left, "left");
 			if (InQueue(left, frontier) == NULL){
-				left->path_cost = (left->path_cost) + left->parentNode->path_cost;
+				left->path_cost = 1 + left->parentNode->path_cost;
 				frontier->push(*left);
 		
 			}
-			else if ((InQueue(left, explored)->path_cost) > (left->path_cost)){
-				Swap(left, explored);			
+			else if ((InQueue(left, frontier)->path_cost) > (left->path_cost)){
+				Swap(left, frontier);			
 			}
 		}else{ delete left;}
 		if (right != NULL && right->depth <= cutoff){
+			//print_node_meta(right, "right");
 			if (InQueue(right, frontier) == NULL){
-				right->path_cost = (right->path_cost) + right->parentNode->path_cost;
+				right->path_cost = 1 + right->parentNode->path_cost;
 				frontier->push(*right);
 			}
-			else if ((InQueue(right, explored)->path_cost) > (right->path_cost)){
-				Swap(right, explored);			
+			else if ((InQueue(right, frontier)->path_cost) > (right->path_cost)){
+				Swap(right, frontier);			
 			}
 		}else{ delete right;}
 
 		cout << "This is the size of frontier at end of while: " << frontier->size() << endl;
-		lastNode = current;
+		lastNode = curr;
 		cutoff++;
 	
 	}
-return current;
+return lastNode;
 }
 
 
