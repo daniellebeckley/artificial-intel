@@ -211,7 +211,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 	explored = new priority_queue<Node>;
 	frontier->push(*current);
 	
-	Node *bestState = NULL;	
+	Node *bestState;	
 	bool keepSearching = true;
 	
 	/* Search until no nodes are visible from current state */
@@ -237,6 +237,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		if (up != NULL){			
 			/* If child isn't in explored queue, add to frontier */
 			if (InQueue(up, explored) == NULL && InQueue(up, frontier) == NULL && up->depth < cutoff){
+				up->path_cost = (up->path_cost) + up->parentNode->path_cost;
 				frontier->push(*up);
 			}
 			/* If child is in explored queue and cheaper, replace */
@@ -246,6 +247,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		}	
 		if (down != NULL){
 			if (InQueue(down, explored) == NULL && InQueue(down, frontier) == NULL && down->depth < cutoff){
+				down->path_cost = (down->path_cost) + down->parentNode->path_cost;
 				frontier->push(*down);
 			}
 			else if ((InQueue(down, explored)->path_cost) > (down->path_cost)){
@@ -254,7 +256,9 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		}
 		if (left != NULL){
 			if (InQueue(left, explored) == NULL && InQueue(left, frontier) == NULL && left->depth < cutoff){
+				left->path_cost = (left->path_cost) + left->parentNode->path_cost;
 				frontier->push(*left);
+		
 			}
 			else if ((InQueue(left, explored)->path_cost) > (left->path_cost)){
 				Swap(left, explored);			
@@ -262,53 +266,22 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		}
 		if (right != NULL){
 			if (InQueue(right, explored) == NULL && InQueue(right, frontier) == NULL && right->depth < cutoff){
+				right->path_cost = (right->path_cost) + right->parentNode->path_cost;
 				frontier->push(*right);
 			}
 			else if ((InQueue(right, explored)->path_cost) > (right->path_cost)){
 				Swap(right, explored);			
 			}
 		}
-
-		/* If there is child, find smallest path_cost */
-		int bestPath = INT_MAX;
-		if (up != NULL){
-			if (up->path_cost < bestPath){
-				bestPath = up->path_cost;
-				bestState = up;
+			
+			if(!frontier->empty()){
 				keepSearching = false;
+				bestState = new Node(frontier->top());
+				frontier->pop();
+				explored->push(*bestState);	
 			}
-		}
-		if (down != NULL){
-			if (down->path_cost < bestPath){
-				bestPath = down->path_cost;
-				bestState = down;
-				keepSearching = false;
-
-			}
-		}
-		if (left != NULL){
-			if (left->path_cost < bestPath){
-				bestPath = left->path_cost;
-				bestState = left;
-				keepSearching = false;
-			}
-		}
-		if (right != NULL){
-			if (right->path_cost < bestPath){
-				bestPath = right->path_cost;
-				bestState = right;
-				keepSearching = false;
-			}
-		}
-
-	// delete up;
-	// delete down;
-	// delete left;
-	// delete right;
 	}
-	if(bestState != NULL){
-		explored->push(*bestState);
-	} 
+
 return bestState;
 }
 
@@ -494,6 +467,7 @@ int main(){
 	// Initialize beginning state
 	int initState[] = {5,0,4,2,1,3,6,7,8};	
 	Node *startNode = construct_node(initState, NULL, "None", 0, 0, 0);
+	queue<Node> *track;
 	
 	// TODO remove test
 	//print_to_screen(startNode);
@@ -502,23 +476,24 @@ int main(){
 	priority_queue<Node> *explored;
 	priority_queue<Node> *frontier;
 
-	// Generate child nodes
-	Node *child = ChildNode(startNode, "down");
+	Node *l = DFSSearch(startNode, explored, frontier, 10);
 	
-	//
-	//Node *test = AStarSearch(startNode, explored, frontier);
-	Node *test = DFSSearch(startNode, explored, frontier, 10);
-	//Solution(test);		//this will print the solution
-	Node *temp = DFSSearch(test, explored, frontier, 10);
-	//Solution(temp);
-	Node *l = DFSSearch(temp, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+		l = DFSSearch(l, explored, frontier, 10);
+
+	
 	Solution(l);
 	//now need some loop so do it until solution found...
 
 	// Deallocation of memory
 	//TODO:; some sort of while loop to delete;
 	delete startNode;
-	delete child;
+	
 
  	return 0;
 }
