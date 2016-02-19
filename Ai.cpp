@@ -186,7 +186,7 @@ bool GoalCheck(Node *current){
 }
 
 void print_to_screen(Node *state){
-	cout << "Step: " << state->depth << endl;				
+	cout << "Step " << state->depth <<": " << state->action << endl;				
 	for(int i = 0; i<9; ){
 		for(int j = 0; j<3; j++){		
 			cout << state->state[i] << " ";
@@ -271,7 +271,6 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 
 		/* If there is child, find smallest path_cost */
 		int bestPath = INT_MAX;
-		cout << "hey" << endl;
 		if (up != NULL){
 			if (up->path_cost < bestPath){
 				bestPath = up->path_cost;
@@ -302,7 +301,14 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			}
 		}
 
+	// delete up;
+	// delete down;
+	// delete left;
+	// delete right;
 	}
+	if(bestState != NULL){
+		explored->push(*bestState);
+	} 
 return bestState;
 }
 
@@ -487,7 +493,7 @@ int main(){
 
 	// Initialize beginning state
 	int initState[] = {5,0,4,2,1,3,6,7,8};	
-	Node *startNode = construct_node(initState, NULL, "", 0, 0, 0);
+	Node *startNode = construct_node(initState, NULL, "None", 0, 0, 0);
 	
 	// TODO remove test
 	//print_to_screen(startNode);
@@ -501,18 +507,13 @@ int main(){
 	
 	//
 	//Node *test = AStarSearch(startNode, explored, frontier);
-	Node *test = DFSSearch(startNode, explored, frontier, 20);
-	//cout<<"Start: "<<endl;
-	//print_to_screen(startNode);
-	//cout<<"Child: "<<endl;
-	//print_to_screen(child);
-
-	cout <<"Solution:" << endl;
-	/**while(!GoalCheck(child)){
-		//do algorithm
-	}
-	*/
-	Solution(child);		//this will print the solution
+	Node *test = DFSSearch(startNode, explored, frontier, 10);
+	//Solution(test);		//this will print the solution
+	Node *temp = DFSSearch(test, explored, frontier, 10);
+	//Solution(temp);
+	Node *l = DFSSearch(temp, explored, frontier, 10);
+	Solution(l);
+	//now need some loop so do it until solution found...
 
 	// Deallocation of memory
 	//TODO:; some sort of while loop to delete;
