@@ -26,9 +26,8 @@ void print_to_screen(Node *state);
 // Override: Determine priority (in the priority queue)
 bool operator<(const Node &a, const Node &b)
 {
-
-	int priorityA = a.depth;
-	int priorityB = b.depth; 
+	int priorityA = a.path_cost + a.cost2go;
+	int priorityB = b.path_cost + b.cost2go; 
 	return priorityA < priorityB;
 }
 
@@ -210,6 +209,104 @@ Node *Solution(Node *n){
 	print_to_screen(n);
 	return n;
 
+}
+
+Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
+	/* Start with initial state */
+	frontier = new priority_queue<Node>;
+	explored = new priority_queue<Node>;
+	Node *bestState = NULL;	
+	frontier->push(*current);
+	/* Search until no nodes are visible from current state */
+	while (!frontier->empty()){
+		Node *curr = new Node(frontier->top());	
+
+		/* If current state == goal state, return */
+		if (GoalCheck(curr)){
+			return Solution(curr);	
+		} 
+
+		frontier->pop();
+		explored->push(*curr);
+		
+		/* For each direction child of current state */
+		Node *child;
+		string actions[] = {"up","down","left","right"};
+		for (int i=0; i<4; i++){
+			child = ChildNode(curr, actions[i]);
+			
+			/* If child isn't NULL */
+			if (child != NULL){			
+				/* If child isn't in explored queue, update child path_cost */
+				if (InQueue(child, explored) == NULL){
+					child->path_cost = (child->cost2go) + (child->path_cost);
+				}
+				/* If child is in explored queue and cheaper, replace */
+				else if ((InQueue(child, explored)->path_cost) > (child->path_cost)){		
+					up->path_cost = (child->cost2go) + (child->path_cost);
+					Swap(child, explored);			
+				}
+			}	
+			child = NULL;			
+		}
+
+		/* If there is child, find smallest path_cost */
+		int bestPath = INT_MAX;
+		
+
+		if (up != NULL){
+			if (up->path_cost < bestPath){
+				bestPath = up->path_cost;
+				bestState = up;
+			}
+		}
+		if (down != NULL){
+			if (down->path_cost < bestPath){
+				bestPath = down->path_cost;
+				bestState = down;
+			}
+		}
+		if (left != NULL){
+			if (left->path_cost < bestPath){
+				bestPath = left->path_cost;
+				bestState = left;
+			}
+		}
+		if (right != NULL){
+			if (right->path_cost < bestPath){
+				bestPath = right->path_cost;
+				bestState = right;
+			}
+		}
+		
+		/* If there is a child, add smallest path_cost to frontier 
+		if (bestState != NULL){
+			/* TODO remove test 
+			print_to_screen(bestState);
+
+			frontier->push(*bestState);
+		}
+
+		for (int x=0; x < frontier->size(); x++){
+			Node *test = new Node(frontier->top());			
+
+			// TODO remove test			
+			//cout << "--PRINT Q--" << endl;
+			//print_to_screen(test);
+			//delete test;
+		}
+
+		//delete up;
+		//delete down;
+		//delete left;
+		//delete right;
+		//delete bestState;
+		//delete oldChild;
+		//delete curr;
+	}
+	//delete curr;	*/
+
+	return bestState;
 }
 
 Node *IDDFS(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, int cutoff){
