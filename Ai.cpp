@@ -237,7 +237,8 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			//exit(EXIT_FAILURE);
 			return curr;	
 		} 
-		
+		//print_to_screen(curr);
+		//cout << endl;
 		while(curr->depth < cutoff){
 			//cout << "current Depth " << curr->depth << endl;
 			frontier->pop();
@@ -258,8 +259,8 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 					}
 				}
 			}
-
-			*curr = frontier->top();
+			
+			curr = new Node(frontier->top());		
 			child = NULL;
 		}
 
@@ -285,133 +286,6 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 
 	cout << "NONE FOUND" << endl;
 	return NULL;
-}
-
-
-Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
-	/* Start with initial state */
-	frontier = new priority_queue<Node>;
-	explored = new priority_queue<Node>;
-	Node *bestState = NULL;	
-	frontier->push(*current);
-	/* Search until no nodes are visible from current state */
-	while (!frontier->empty()){
-		Node *curr = new Node(frontier->top());	
-
-		/* If current state == goal state, return */
-		if (GoalCheck(curr)){
-			return Solution(curr);	
-		} 
-		cout << frontier->size() << endl;
-		frontier->pop();
-		explored->push(*curr);
-		
-		/* For each direction child of current state */
-		Node *up = ChildNode(curr, "up");
-		Node *down = ChildNode(curr, "down");
-		Node *left = ChildNode(curr, "left");
-		Node *right = ChildNode(curr, "right");
-		Node *oldChild;		
-
-		for (int i=0; i<4; i++){
-			
-		}
-
-		/* If child isn't NULL */
-		if (up != NULL){			
-			/* If child isn't in explored queue, update child path_cost */
-			if (InQueue(up, explored) == NULL){
-				up->path_cost = (up->cost2go) + (up->path_cost);
-			}
-			/* If child is in explored queue and cheaper, replace */
-			else if ((InQueue(up, explored)->path_cost) > (up->path_cost)){		
-				up->path_cost = (up->cost2go) + (up->path_cost);
-				Swap(up, explored);			
-			}
-		}	
-		if (down != NULL){
-			if (InQueue(down, explored) == NULL){
-				down->path_cost = (down->cost2go) + (down->path_cost);
-			}
-			else if ((InQueue(down, explored)->path_cost) > (down->path_cost)){
-				down->path_cost = (down->cost2go) + (down->path_cost);
-				Swap(down, explored);			
-			}
-		}
-		if (left != NULL){
-			if (InQueue(left, explored) == NULL){
-				left->path_cost = (left->cost2go) + (left->path_cost);
-			}
-			else if ((InQueue(left, explored)->path_cost) > (left->path_cost)){
-				left->path_cost = (left->cost2go) + (left->path_cost);
-				Swap(left, explored);			
-			}
-		}
-		if (right != NULL){
-			if (InQueue(right, explored) == NULL){
-				right->path_cost = (right->cost2go) + (right->path_cost);
-			}
-			else if ((InQueue(right, explored)->path_cost) > (right->path_cost)){
-				right->path_cost = (right->cost2go) + (right->path_cost);
-				Swap(right, explored);			
-			}
-		}
-
-		/* If there is child, find smallest path_cost */
-		int bestPath = INT_MAX;
-		if (up != NULL){
-			if (up->path_cost < bestPath){
-				bestPath = up->path_cost;
-				bestState = up;
-			}
-		}
-		if (down != NULL){
-			if (down->path_cost < bestPath){
-				bestPath = down->path_cost;
-				bestState = down;
-			}
-		}
-		if (left != NULL){
-			if (left->path_cost < bestPath){
-				bestPath = left->path_cost;
-				bestState = left;
-			}
-		}
-		if (right != NULL){
-			if (right->path_cost < bestPath){
-				bestPath = right->path_cost;
-				bestState = right;
-			}
-		}
-		
-		/* If there is a child, add smallest path_cost to frontier */
-		if (bestState != NULL){
-			/* TODO remove test */
-			print_to_screen(bestState);
-
-			frontier->push(*bestState);
-		}
-
-		for (int x=0; x < frontier->size(); x++){
-			Node *test = new Node(frontier->top());			
-
-			// TODO remove test			
-			//cout << "--PRINT Q--" << endl;
-			//print_to_screen(test);
-			//delete test;
-		}
-
-		//delete up;
-		//delete down;
-		//delete left;
-		//delete right;
-		//delete bestState;
-		//delete oldChild;
-		//delete curr;
-	}
-	//delete curr;	
-
-	return bestState;
 }
 
 void Swap(Node *swapState, priority_queue<Node> *q){
@@ -450,20 +324,29 @@ bool CompareStates(Node *cmp1, Node *cmp2){
 Node *InQueue(Node *compState, priority_queue<Node> *q){
 	bool isIn = false;	
 	Node *match = NULL;
-	//priority_queue<Node> *temp = q;
+	priority_queue<Node> *temp = new priority_queue<Node>;
+	int qSize = q->size();	
+
 	/* For each state in priority queue */
-	for (int i = 0; i < q->size() && !isIn; i++){	
+	for (int i = 0; i < qSize ; i++){	
 		/* Check if state is same as 'compState' */
 		//Node *curr = new Node(temp->top());
 		//temp->pop();
 		Node *curr = new Node(q->top());
+		q->pop();
 		bool tileMatch = CompareStates(compState, curr);
-		
+		temp->push(*curr);		
+
 		/* State is the same */
 		if (tileMatch){
-			isIn = true;
 			match = curr;
 		}
+	}
+
+	for (int j=0; j < qSize; j++){
+		Node *curr = new Node(temp->top());
+		temp->pop();
+		q->push(*curr);
 	}
 
 	return match;
@@ -490,7 +373,9 @@ int main(){
     		l = DFSSearch(startNode, explored, frontier, count); //checked: 0, 1, 2,3
     		count++;
   	}
-
+	print_to_screen(l);
+	//cout << "PARENT" << endl;
+	//print_to_screen(l->parentNode);
 
 
 	
