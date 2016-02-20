@@ -242,65 +242,25 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			//cout << "current Depth " << curr->depth << endl;
 			frontier->pop();
 		
-		/* For each direction child of current state */
+			/* For each direction child of current state */
+			string actions[] = {"up","down","left","right"};
+			Node *child;
 
-			Node *up = ChildNode(curr, "up");
-			Node *down = ChildNode(curr, "down");
-			Node *left = ChildNode(curr, "left");
-			Node *right = ChildNode(curr, "right");
-
-		/* If child isn't NULL */
-			if (up != NULL && up->depth <= cutoff){	
-			//print_node_meta(up, "up");		
-			/* If child isn't in explored queue, add to frontier */
-				if (InQueue(up, frontier) == NULL){
-					up->depth = 1 + up->parentNode->depth;
-					frontier->push(*up);
-
-				}
-			/* If child is in explored queue and cheaper, replace */
-				else if ((InQueue(up, frontier)->depth) > (up->depth)){		
-					Swap(up, frontier);			
-				}
-			}	
-			if (down != NULL && down->depth <= cutoff){
-			//print_node_meta(down, "down");
-				if (InQueue(down, frontier) == NULL){
-					down->depth = 1 + down->parentNode->depth;
-					frontier->push(*down);
-				}
-				else if ((InQueue(down, frontier)->depth) > (down->depth)){
-					Swap(down, frontier);			
+			for (int i=0; i<4; i++){
+				child = ChildNode(curr, actions[i]);
+				if (child != NULL && child->depth <= cutoff){
+					if (InQueue(child, frontier) == NULL){
+						child->depth = 1 + child->parentNode->depth;
+						frontier->push(*child);
+					}
+					else if ((InQueue(child, frontier)->depth) > (child->depth)){
+						Swap(child, frontier);
+					}
 				}
 			}
-			if (left != NULL && left->depth <= cutoff){
-			//print_node_meta(left, "left");
-				if (InQueue(left, frontier) == NULL){
-					left->depth = 1 + left->parentNode->depth;
-					frontier->push(*left);
 
-				}
-				else if ((InQueue(left, frontier)->depth) > (left->depth)){
-					Swap(left, frontier);			
-				}
-			}
-			if (right != NULL && right->depth <= cutoff){
-			//print_node_meta(right, "right");
-				if (InQueue(right, frontier) == NULL){
-					right->depth = 1 + right->parentNode->depth;
-					frontier->push(*right);
-				}
-				else if ((InQueue(right, frontier)->depth) > (right->depth)){
-					Swap(right, frontier);			
-				}
-			}
-		*curr = frontier->top();
-		
-		up = NULL;
-		down = NULL;
-		right = NULL;
-		left = NULL;
-
+			*curr = frontier->top();
+			child = NULL;
 		}
 
 		cout << "Exited the loop with " << curr->depth << " nodes to check " << endl;
@@ -352,6 +312,10 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 		Node *left = ChildNode(curr, "left");
 		Node *right = ChildNode(curr, "right");
 		Node *oldChild;		
+
+		for (int i=0; i<4; i++){
+			
+		}
 
 		/* If child isn't NULL */
 		if (up != NULL){			
