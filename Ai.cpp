@@ -212,7 +212,7 @@ Node *Solution(Node *n){
 
 }
 
-Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, int cutoff){
+Node *IDDFS(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier, int cutoff){
 	frontier = new priority_queue<Node>;
 	explored = new priority_queue<Node>;
 	Node *lastNode = current;
@@ -233,14 +233,12 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 
 		/* If current state == goal state, return */
 		if (GoalCheck(curr)){
-			cout << "GOOOOOOOOALLLLLL" << endl;
+			cout << "You have reached the goal." << endl;
 			//exit(EXIT_FAILURE);
 			return curr;	
 		} 
-		//print_to_screen(curr);
-		//cout << endl;
+
 		while(curr->depth < cutoff){
-			//cout << "current Depth " << curr->depth << endl;
 			frontier->pop();
 		
 			/* For each direction child of current state */
@@ -263,18 +261,15 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			curr = new Node(frontier->top());		
 			child = NULL;
 		}
-
-		cout << "Exited the loop with " << curr->depth << " nodes to check " << endl;
 		
 		temp = new Node(frontier->top());
 	
 		while(temp->depth == cutoff && !frontier->empty()){
 			if (GoalCheck(temp)){
-				cout << "GOOOOOOOOALLLLLL" << endl;
+				cout << "You have reached the goal." << endl;
 				return temp;	
 			}
 			else{
-				cout << temp->action << " " << temp->depth;
 				frontier->pop();
 				temp = NULL;
 			}
@@ -283,8 +278,6 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		}
 
 	}
-
-	cout << "NONE FOUND" << endl;
 	return NULL;
 }
 
@@ -329,9 +322,7 @@ Node *InQueue(Node *compState, priority_queue<Node> *q){
 
 	/* For each state in priority queue */
 	for (int i = 0; i < qSize ; i++){	
-		/* Check if state is same as 'compState' */
-		//Node *curr = new Node(temp->top());
-		//temp->pop();
+
 		Node *curr = new Node(q->top());
 		q->pop();
 		bool tileMatch = CompareStates(compState, curr);
@@ -357,10 +348,6 @@ int main(){
 	// Initialize beginning state
 	int initState[] = {5,0,4,2,1,3,6,7,8};	
 	Node *startNode = construct_node(initState, NULL, "None", 0, 0, 0);
-	queue<Node> *track;
-	
-	// TODO remove test
-	//print_to_screen(startNode);
 
 	// Define explored and frontier priority queues
 	priority_queue<Node> *explored;
@@ -370,23 +357,13 @@ int main(){
  	Node *l = NULL;
   	int count = 0;
   	while (count <= 20 && l == NULL){
-    		l = DFSSearch(startNode, explored, frontier, count); //checked: 0, 1, 2,3
+    		l = IDDFS(startNode, explored, frontier, count);
     		count++;
   	}
-	print_to_screen(l);
-	//cout << "PARENT" << endl;
-	//print_to_screen(l->parentNode);
 
-
-	
 	if(l != NULL){Solution(l);}
-	//now need some loop so do it until solution found...
 
-	// Deallocation of memory
-	//TODO:; some sort of while loop to delete;
 	delete startNode;
-	
-
  	return 0;
 }
 
