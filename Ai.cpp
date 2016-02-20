@@ -223,11 +223,16 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 	bool keepSearching = true;
 
 	/* Search until no nodes are visible from current state */
-	Node *curr;
+	Node *curr = current;
 	Node *temp;
+	Node *up;
+	Node *down;
+	Node *left;
+	Node *right;
 
-	//if(i < cutoff){
-		curr = current;
+	while(!frontier->empty() && frontier->top().depth <= cutoff-1){
+		cout << "top of thing" << endl;
+		curr = new Node(frontier->top());
 
 
 		/* If current state == goal state, return */
@@ -240,14 +245,14 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		while(curr->depth < cutoff){
 			cout << "current Depth " << curr->depth << endl;
 			frontier->pop();
-		//explored->push(*curr);
-
+		
+		cout << "****" << endl;
 		/* For each direction child of current state */
 			Node *up = ChildNode(curr, "up");
+			cout << "here" << endl;
 			Node *down = ChildNode(curr, "down");
 			Node *left = ChildNode(curr, "left");
 			Node *right = ChildNode(curr, "right");
-
 
 		/* If child isn't NULL */
 			if (up != NULL && up->depth <= cutoff){	
@@ -298,17 +303,21 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		cout <<"Total in Queue" <<frontier->size() << endl;
 		}
 
-		cout << "Exited the loop with" << curr->depth << "nodes to check " << cutoff << endl;
-		*temp = frontier->top();
-		while(temp->depth == cutoff){
+		cout << "Exited the loop with " << curr->depth << "nodes to check " << endl;
+		
+		temp = new Node(frontier->top());
+	
+		while(temp->depth == cutoff && !frontier->empty()){
 			if (GoalCheck(temp)){
 				return Solution(temp);	
 			}
 			else{
+				cout << temp->action << " " << temp->depth << endl;
 				frontier->pop();
 			}
 			*temp = frontier->top();
 		}
+	}
 
 	cout << "NONE FOUND" << endl;
 	return NULL;
@@ -505,8 +514,7 @@ int main(){
 	priority_queue<Node> *frontier;
 	
 
-	Node *l = DFSSearch(startNode, explored, frontier, 2);
-	//cout << frontier->empty() << endl;
+	Node *l = DFSSearch(startNode, explored, frontier, 2); //checked: 0, 1
 	//Node *ll = DFSSearch(l, explored, frontier, 1);
 		//l = DFSSearch(l, explored, frontier, 10);
 		//l = DFSSearch(l, explored, frontier, 10);
