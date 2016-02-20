@@ -234,8 +234,8 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		/* If current state == goal state, return */
 		if (GoalCheck(curr)){
 			cout << "GOOOOOOOOALLLLLL" << endl;
-			exit(EXIT_FAILURE);
-			return Solution(curr);	
+			//exit(EXIT_FAILURE);
+			return curr;	
 		} 
 		
 		while(curr->depth < cutoff){
@@ -310,7 +310,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 		while(temp->depth == cutoff && !frontier->empty()){
 			if (GoalCheck(temp)){
 				cout << "GOOOOOOOOALLLLLL" << endl;
-				return Solution(temp);	
+				return temp;	
 			}
 			else{
 				cout << temp->action << " " << temp->depth;
