@@ -484,11 +484,12 @@ bool CompareStates(Node *cmp1, Node *cmp2){
 Node *InQueue(Node *compState, priority_queue<Node> *q){
 	bool isIn = false;	
 	Node *match = NULL;
-	
+	priority_queue<Node> *temp = q;
 	/* For each state in priority queue */
 	for (int i = 0; i < q->size() && !isIn; i++){	
 		/* Check if state is same as 'compState' */
-		Node *curr = new Node(q->top());
+		Node *curr = new Node(temp->top());
+		temp->pop();
 		bool tileMatch = CompareStates(compState, curr);
 		
 		/* State is the same */
