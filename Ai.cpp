@@ -313,10 +313,12 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 				return Solution(temp);	
 			}
 			else{
-				//cout << temp->action << endl;
+				cout << temp->action << " " << temp->depth;
 				frontier->pop();
+				delete temp;
 			}
-			*temp = frontier->top();
+
+			temp = new Node(frontier->top());
 		}
 
 	}
@@ -484,12 +486,13 @@ bool CompareStates(Node *cmp1, Node *cmp2){
 Node *InQueue(Node *compState, priority_queue<Node> *q){
 	bool isIn = false;	
 	Node *match = NULL;
-	priority_queue<Node> *temp = q;
+	//priority_queue<Node> *temp = q;
 	/* For each state in priority queue */
 	for (int i = 0; i < q->size() && !isIn; i++){	
 		/* Check if state is same as 'compState' */
-		Node *curr = new Node(temp->top());
-		temp->pop();
+		//Node *curr = new Node(temp->top());
+		//temp->pop();
+		Node *curr = new Node(q->top());
 		bool tileMatch = CompareStates(compState, curr);
 		
 		/* State is the same */
@@ -517,7 +520,7 @@ int main(){
 	priority_queue<Node> *frontier;
 	
 
-	Node *l = DFSSearch(startNode, explored, frontier, 5); //checked: 0, 1, 2,3 
+	Node *l = DFSSearch(startNode, explored, frontier, 10); //checked: 0, 1, 2,3 
 
 
 	
