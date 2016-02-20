@@ -315,7 +315,7 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			else{
 				cout << temp->action << " " << temp->depth;
 				frontier->pop();
-				delete temp;
+				temp = NULL;
 			}
 
 			temp = new Node(frontier->top());
@@ -520,7 +520,13 @@ int main(){
 	priority_queue<Node> *frontier;
 	
 
-	Node *l = DFSSearch(startNode, explored, frontier, 10); //checked: 0, 1, 2,3 
+ 	Node *l = NULL;
+  	int count = 0;
+  	while (count <= 20 && l == NULL){
+    		l = DFSSearch(startNode, explored, frontier, count); //checked: 0, 1, 2,3
+    		count++;
+  	}
+
 
 
 	
