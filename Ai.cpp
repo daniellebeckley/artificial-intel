@@ -27,8 +27,8 @@ void print_to_screen(Node *state);
 bool operator<(const Node &a, const Node &b)
 {
 
-	int priorityA = a.path_cost;
-	int priorityB = b.path_cost; 
+	int priorityA = a.depth;
+	int priorityB = b.depth; 
 	return priorityA < priorityB;
 }
 
@@ -254,52 +254,52 @@ Node *DFSSearch(Node *current, priority_queue<Node> *explored, priority_queue<No
 			//print_node_meta(up, "up");		
 			/* If child isn't in explored queue, add to frontier */
 				if (InQueue(up, frontier) == NULL){
-					up->path_cost = 1 + up->parentNode->path_cost;
+					up->depth = 1 + up->parentNode->depth;
 					frontier->push(*up);
 
 				}
 			/* If child is in explored queue and cheaper, replace */
-				else if ((InQueue(up, frontier)->path_cost) > (up->path_cost)){		
+				else if ((InQueue(up, frontier)->depth) > (up->depth)){		
 					Swap(up, frontier);			
 				}
 			}	
 			if (down != NULL && down->depth <= cutoff){
 			//print_node_meta(down, "down");
 				if (InQueue(down, frontier) == NULL){
-					down->path_cost = 1 + down->parentNode->path_cost;
+					down->depth = 1 + down->parentNode->depth;
 					frontier->push(*down);
 				}
-				else if ((InQueue(down, frontier)->path_cost) > (down->path_cost)){
+				else if ((InQueue(down, frontier)->depth) > (down->depth)){
 					Swap(down, frontier);			
 				}
 			}
 			if (left != NULL && left->depth <= cutoff){
 			//print_node_meta(left, "left");
 				if (InQueue(left, frontier) == NULL){
-					left->path_cost = 1 + left->parentNode->path_cost;
+					left->depth = 1 + left->parentNode->depth;
 					frontier->push(*left);
 
 				}
-				else if ((InQueue(left, frontier)->path_cost) > (left->path_cost)){
+				else if ((InQueue(left, frontier)->depth) > (left->depth)){
 					Swap(left, frontier);			
 				}
 			}
 			if (right != NULL && right->depth <= cutoff){
 			//print_node_meta(right, "right");
 				if (InQueue(right, frontier) == NULL){
-					right->path_cost = 1 + right->parentNode->path_cost;
+					right->depth = 1 + right->parentNode->depth;
 					frontier->push(*right);
 				}
-				else if ((InQueue(right, frontier)->path_cost) > (right->path_cost)){
+				else if ((InQueue(right, frontier)->depth) > (right->depth)){
 					Swap(right, frontier);			
 				}
 			}
 		*curr = frontier->top();
 		
-		delete up;
-		delete down;
-		delete right;
-		delete left;
+		up = NULL;
+		down = NULL;
+		right = NULL;
+		left = NULL;
 
 		}
 
