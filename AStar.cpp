@@ -18,9 +18,9 @@ using namespace std;
 // Override: Determine priority (in the priority queue)
 bool operator<(const Node &a, const Node &b)
 {
-	int priorityA = a.depth;
-	int priorityB = b.depth; 
-	return priorityA < priorityB;
+	int priorityA = a.path_cost;
+	int priorityB = b.path_cost; 
+	return priorityA > priorityB;
 }	
 	
 /* Constructs a new Node and returns a pointer to the new Node */
@@ -30,7 +30,6 @@ Node *construct_node(int *state, Node *parentState, string action, int path_cost
 	Returns NULL if not found. 
 */	
 Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier);
-
 
 /* Returns the cost to go given a current state */
 int Cost2Go(Node *current);
