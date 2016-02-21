@@ -5,11 +5,10 @@
 #include <queue>
 #include <algorithm>	// Library for 'copy' 
 #include <climits>		// Library for 'INT_MAX'
-
 using namespace std;
 
 namespace NodeFuncs{
-	MyNodeFuncs::Node *construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go){
+	Node* MyNodeFuncs::construct_node(int *state, Node *parentState, string action, int path_cost, int depth, int cost2go){
 		// Allocate memory for new node
 		Node *newNode = new Node;	
 
@@ -25,7 +24,7 @@ namespace NodeFuncs{
 	}
 
 	
-	MyNodeFuncs::Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
+	Node* MyNodeFuncs::AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<Node> *frontier){
 		frontier = new priority_queue<Node>;
 		explored = new priority_queue<Node>;
 
@@ -80,7 +79,7 @@ namespace NodeFuncs{
 	}
 
 		
-	MyNodeFuncs::Node *IDDFS(Node *current, priority_queue<Node> *frontier, int cutoff){
+	Node *MyNodeFuncs::IDDFS(Node *current, priority_queue<Node> *frontier, int cutoff){
 		frontier = new priority_queue<Node>;
 		explored = new priority_queue<Node>;
 		
@@ -151,7 +150,7 @@ namespace NodeFuncs{
 		return NULL;
 	}
 	
-	MyNodeFuncs::int Cost2Go(Node *current){
+	int MyNodeFuncs::Cost2Go(Node *current){
 		int sum = 0;
 	
 		// Cost array for each number in state
@@ -176,7 +175,7 @@ namespace NodeFuncs{
 		return sum;
 	}
 
-	MyNodeFuncs::Node *InQueue(Node *compState, priority_queue<Node> *q){
+	Node *MyNodeFuncs::InQueue(Node *compState, priority_queue<Node> *q){
 		Node *match = NULL;
 		priority_queue<Node> *temp = new priority_queue<Node>;
 		int qSize = q->size();	
@@ -204,7 +203,7 @@ namespace NodeFuncs{
 		return match;
 	}
 
-	MyNodeFuncs::void Swap(Node *swapState, priority_queue<Node> *q){
+	void MyNodeFuncs::Swap(Node *swapState, priority_queue<Node> *q){
 		priority_queue<Node> *temp;
 		temp = new priority_queue<Node>;	
 
@@ -223,7 +222,7 @@ namespace NodeFuncs{
 		q = temp;
 	}
 
-	MyNodeFuncs::bool CompareStates(Node *cmp1, Node *cmp2){
+	bool MyNodeFuncs::CompareStates(Node *cmp1, Node *cmp2){
 		int *cmpTiles1 = cmp1->state;
 		int *cmpTiles2 = cmp2->state;
 		bool tileMatch = true;
@@ -238,7 +237,7 @@ namespace NodeFuncs{
 		return tileMatch;
 	}
 
-	MyNodeFuncs::void print_to_screen(Node *state){
+	void MyNodeFuncs::print_to_screen(Node *state){
 		cout << "Step " << state->depth <<": " << state->action << endl;				
 		
 		/* Print each state */
@@ -251,7 +250,7 @@ namespace NodeFuncs{
 		}
 	}	
 
-	MyNodeFuncs::void print_node_meta(Node *state, string action){
+	void MyNodeFuncs::print_node_meta(Node *state, string action){
 		/* Print info about 'state' and 'action' */
 		cout << "-- For: " << action << endl;
 		cout << "\tpath_cost: " << state->path_cost << endl;
@@ -259,7 +258,7 @@ namespace NodeFuncs{
 		cout << "\tcost2go: " << state->cost2go << endl;
 	}
 
-	MyNodeFuncs::void flip_tiles(int *stateTiles, string actionReq){
+	void MyNodeFuncs::flip_tiles(int *stateTiles, string actionReq){
 		/* Find blank tile. In this case, blank tile is
 		      gauranteed, so no error checking needed.
 		*/	
@@ -299,7 +298,7 @@ namespace NodeFuncs{
 		}
 	}
 	
-	MyNodeFuncs::Node *ChildNode(Node *currNode, string actionReq){
+	Node *MyNodeFuncs::ChildNode(Node *currNode, string actionReq){
 		/* Node to be returned as child Node. 
 		   Will be empty if action is not allowed */
 		Node *childNode;		
@@ -377,7 +376,7 @@ namespace NodeFuncs{
 		return childNode;
 	}
 
-	MyNodeFuncs::bool GoalCheck(Node *current){
+	bool MyNodeFuncs::GoalCheck(Node *current){
 		int goal[] ={0,1,2,3,4,5,6,7,8};
 		Node *goalState = construct_node(goal, NULL, "", 0, 0, 0);
 		/* Return (current == goalState) */	
@@ -385,7 +384,7 @@ namespace NodeFuncs{
 	}
 
 
-	MyNodeFuncs::Void *Solution(Node *n){	
+	void *MyNodeFuncs::Solution(Node *n){	
 		/* Print each state from state 'n' to goal */
 		if(n->parentNode != NULL){
 			Solution(n->parentNode);

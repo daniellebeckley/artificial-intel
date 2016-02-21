@@ -1,4 +1,13 @@
 // NodeFuncsLib.h
+//#ifndef NODEFUNCS_H
+#define NODEFUNCS_H
+
+#include <string>
+#include <iostream>
+#include <queue>
+#include <algorithm>	// Library for 'copy' 
+#include <climits>		// Library for 'INT_MAX'
+using namespace std;
 
 namespace NodeFuncs{
 	class MyNodeFuncs{
@@ -57,5 +66,7 @@ namespace NodeFuncs{
 			/* Prints the states reached from state {@code n} to desired goal state. */
 			void Solution(Node *n);
 			
-	}
+	};
 }
+
+//#endif
