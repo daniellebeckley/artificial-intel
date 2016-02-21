@@ -29,7 +29,7 @@ bool operator<(const Node &a, const Node &b)
 {
 	int priorityA = a.path_cost;
 	int priorityB = b.path_cost; 
-	return priorityA < priorityB;
+	return priorityA > priorityB;
 }
 
 void flip_tiles(int *stateTiles, string actionReq){
@@ -223,15 +223,14 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 
 	while(!frontier->empty()){
 		curr = new Node(frontier->top());
-
+	
 		/* If current state == goal state, return */
 		if (GoalCheck(curr)){
 			cout << "You have reached the goal." << endl;
-			//exit(EXIT_FAILURE);
 			return curr;	
 		} 
-
 		frontier->pop();
+		explored->push(*curr);
 		
 		/* For each direction child of current state */
 		string actions[] = {"up","down","left","right"};
@@ -241,18 +240,24 @@ Node *AStarSearch(Node *current, priority_queue<Node> *explored, priority_queue<
 			child = ChildNode(curr, actions[i]);
 			if (child != NULL){
 				child->path_cost = child->cost2go + child->parentNode->path_cost + 1;
-				if ((InQueue(child, frontier) == NULL) || (InQueue(child, explored) == NULL)){
+
+				if ((InQueue(child, frontier) == NULL) && (InQueue(child, explored) == NULL)){
 					frontier->push(*child);
 				}
-				else if ((InQueue(child, frontier)->path_cost) > (child->path_cost)){
-					Swap(child, frontier);
+				else if (InQueue(child, frontier) != NULL) {
+					if ((InQueue(child, frontier)->path_cost) > (child->path_cost)){
+						Swap(child, frontier);
+					}				
 				}
+				//print_node_meta(child,actions[i]);
 				print_to_screen(child);
 			}
+			child = NULL;
 		}
 		
-		curr = new Node(frontier->top());		
-		child = NULL;	
+		//print_to_screen(frontier->top());
+		//curr = new Node(frontier->top());		
+		//child = NULL;	
 	}
 
 	return NULL;
@@ -292,14 +297,12 @@ bool CompareStates(Node *cmp1, Node *cmp2){
 
 /* TODO Test*/
 Node *InQueue(Node *compState, priority_queue<Node> *q){
-	bool isIn = false;	
 	Node *match = NULL;
 	priority_queue<Node> *temp = new priority_queue<Node>;
 	int qSize = q->size();	
 
 	/* For each state in priority queue */
 	for (int i = 0; i < qSize ; i++){	
-
 		Node *curr = new Node(q->top());
 		q->pop();
 		bool tileMatch = CompareStates(compState, curr);
@@ -331,7 +334,7 @@ int main(){
 	priority_queue<Node> *frontier;
 	
 
- 	Node *l = AStarSearch(l, explored, frontier);
+ 	Node *l = AStarSearch(startNode, explored, frontier);
 
 	if(l != NULL){Solution(l);}
 
